@@ -64,15 +64,15 @@ class ArticleController extends AbstractController
     public function show(Article $article,MarkDownHelper $markDownHelper,SlackClient $slackClient)
     {
 
-        if ($article->getSlug() === 'why-asteroids-taste-like-bacon-231') {
-            $slackClient->sendMessage('Kahn', 'Ah, Kirke, my old friend...');
-        }
+//        if ($article->getSlug() === 'why-asteroids-taste-like-bacon-231') {
+//            $slackClient->sendMessage('Kahn', 'Ah, Kirke, my old friend...');
+//        }
 
         if(!$article){
             throw $this->createNotFoundException(sprintf('No article for slug "%s"',$article->getSlug()));
         }
 
-//        $articleContent = $markDownHelper->parse($articleContent);
+        $articleContent = $markDownHelper->parse($article->getContent());
         return $this->render('article/show.html.twig',[
             'article'=>$article
         ]);

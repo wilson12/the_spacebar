@@ -19,15 +19,12 @@ class ArticleFixtures extends BaseFixtures implements DependentFixtureInterface
         'mercury.jpeg',
         'lightspeed.png',
     ];
-    private static $articleAuthors = [
-        'Mike Ferengi',
-        'Amy Oort',
-    ];
 
     protected function loadData(ObjectManager $manager)
     {
 
-        $this->createMany(Article::class, 10, function(Article $article, $count) use ($manager) {
+        $this->createMany(10, 'article_main', function($count) use ($manager) {
+            $article = new Article();
             $article->setTitle($this->faker->randomElement(self::$articleTitles))
                 ->setContent(<<<EOF
 Spicy **jalapeno bacon** ipsum dolor amet veniam shank in dolore. Ham hock nisi landjaeger cow,
@@ -50,14 +47,15 @@ EOF
             if ($this->faker->boolean(70)) {
                 $article->setPublishedAt($this->faker->dateTimeBetween('-100 days', '-1 days'));
             }
-            $article->setAuthor($this->faker->randomElement(self::$articleAuthors))
+            $article->setAuthor($this->getRandomReference('main_users'))
                 ->setHeartCount($this->faker->numberBetween(5, 100))
                 ->setImageFilename('asteroid.jpeg')
             ;
-            $tags = $this->getRandomReferences(Tag::class, $this->faker->numberBetween(0, 5));
+            $tags = $this->getRandomReferences('tag_main', $this->faker->numberBetween(0, 5));
             foreach ($tags as $tag) {
                 $article->addTag($tag);
             }
+            return $article;
 
         });
         $manager->flush();
@@ -74,6 +72,7 @@ EOF
         // TODO: Implement getDependencies() method.
         return [
             TagFixtures::class,
+            UserFixture::class,
         ];
     }
 }
